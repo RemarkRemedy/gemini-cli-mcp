@@ -218,7 +218,10 @@ export class WarmProcessPool {
       return new Promise<void>((resolve) => {
         wp.cp.on("exit", () => resolve());
         wp.cp.on("error", () => resolve());
-        try { wp.cp.kill("SIGTERM"); } catch { resolve(); }
+        try {
+          wp.cp.kill("SIGTERM");
+          setTimeout(() => { try { wp.cp.kill("SIGKILL"); } catch { /* already dead */ } }, 5000);
+        } catch { resolve(); }
       });
     });
 
